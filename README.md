@@ -1,4 +1,5 @@
-#MVC (NodeJS-Express-EJS) and database
+# MVC (NodeJS-Express-EJS) and database
+
 Authors: Avigail Hagay & Racheli Ben Hamo.
 
 This project is a web application that allows users to view the image of the day from NASA and leave comments on the images. 
