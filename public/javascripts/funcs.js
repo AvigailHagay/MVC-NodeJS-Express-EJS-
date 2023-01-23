@@ -2,9 +2,7 @@ const main = (function () {
 
     const APIKEY = "qijff1jJSPIFWokHzvfxGh4aTB3wwT6YFi2DLCup";
     const sessionMessage = "Session has been expired. please login again";
-    const activateLoadGif =()=>{document.getElementById("spinner").hidden = false;}
-    const stopLoadGif =()=>{document.getElementById("spinner").hidden = true;}
-    let userDate = "";
+    let topImageLoaded = "", bottomImageLoaded = "", spinner = "";
 
     /** Upon loading the page, we bind handlers to the form,
      * the window and the buttons.*/
@@ -12,6 +10,7 @@ const main = (function () {
 
         let nasaData = nasaDataHandler();
         let serverData = serverDataHandler();
+        spinner = document.getElementById("spinner");
 
         /** Checks if the window scrolled to the bottom.*/
         window.onscroll = function () {
@@ -24,8 +23,10 @@ const main = (function () {
         nasaData.getImages();
         document.getElementById("datePicker").addEventListener("change", nasaData.getImages)
         serverData.startTimer();
-
     });
+
+    const activateLoadGif = () => { spinner.hidden = false; }
+    const stopLoadGif = () => { spinner.hidden = true; }
 
 //-----------------------------------------------------------------------
 //  A module dealing with all the data we get from nasa server,
@@ -42,9 +43,10 @@ const main = (function () {
         const getImages = () => {
             let pickedDate = document.getElementById('datePicker').valueAsDate;
             let endDate = convertDateToString(pickedDate);
-            userDate = pickedDate.toString();
+            topImageLoaded = pickedDate.toString();
             let startDate = pickedDate;
             startDate.setDate(startDate.getDate() - MAX_IMG);
+            bottomImageLoaded = startDate.toString();
             currDate = startDate;
             startDate = convertDateToString(startDate);
             showImages(startDate, endDate, true);
@@ -63,7 +65,7 @@ const main = (function () {
             fetchImages(startDate, endDate)
                 .then(data => handleData(data, reset))
                 .catch(error => serverDataHandler().handleErrorCenter(error))
-                .finally(()=>stopLoadGif());
+                .finally(() => stopLoadGif());
         }
 
         /** the fetch request */
@@ -173,9 +175,9 @@ const main = (function () {
                     }
                     return response.json();
                 }).then(function (data) {
-                    data.forEach(date => {
-                        if(imgIsLoaded(date,userDate))
-                            getData(date);
+                data.forEach(date => {
+                    if(imgIsLoaded(date))
+                        getData(date);
                 });
             })
                 .catch(function (error) {
@@ -258,10 +260,10 @@ const main = (function () {
                     }
                     return response.json();
                 }).then(function (data) {
-                    document.getElementById(tableId).innerHTML = creatCommentSection(data, false, date);
+                document.getElementById(tableId).innerHTML = creatCommentSection(data, false, date);
             }).catch(function (error) {
                 handleErrorCenter(error);
-            }).finally(()=>stopLoadGif())
+            }).finally(() => stopLoadGif())
         }
 
         /** Delete request. asks from the server to delete comment of the wanted picture, with
@@ -283,7 +285,7 @@ const main = (function () {
                 getData(date);
             }).catch(function (error) {
                 handleErrorCenter(error);
-            }).finally(()=>stopLoadGif())
+            }).finally(() => stopLoadGif())
         }
 
         /** creat the comment-section check by the username if delete button needed*/
@@ -300,11 +302,12 @@ const main = (function () {
             return html;
         }
 
-        /** check if the image with the changes is in the feed*/
-        const imgIsLoaded = (dateChanges, currDate) =>{
+        /** check if the image with the changes is on the feed*/
+        const imgIsLoaded = (dateChanges) =>{
             const date1Time = new Date(dateChanges).getTime();
-            const date2Time = new Date(currDate).getTime();
-            return date1Time <= date2Time;
+            const date2Time = new Date(topImageLoaded).getTime();
+            const date3Time = new Date(bottomImageLoaded).getTime();
+            return date1Time <= date2Time && date3Time <= date1Time;
         }
 
         /** Displays error message with close button and an exclamation icon,
