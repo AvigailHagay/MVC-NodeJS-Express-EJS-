@@ -9,3 +9,16 @@ This application also utilizes a relational database to store the users and thei
 
 This project demonstrates a solid understanding of web development principles and technologies, including server-side and client-side programming, database management, and web application design.
 
+## Features
+
+- **User Registration**: Securely register and log in to access the feed.
+- **Daily NASA Images**: Fetches daily space images from NASA's Astronomy Picture of the Day database.
+- **User Comments**: Add, view, and delete comments on images. Each comment is limited to 128 characters.
+- **Infinite Scrolling**: Easily access the rest of the feed of photos with infinite scrolling, loading the next 3 photos as you reach the end.
+
+## Technologies Used
+
+- **Backend**: Express
+- **Frontend**: EJS
+- **Database**: Sequelize
+- **Authentication**: bcrypt
